@@ -19,6 +19,9 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 import java.io.IOException;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 @RequiredArgsConstructor
 public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
@@ -42,8 +45,10 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
                 .withSubject(authResult.getName())
                 .withExpiresAt(new Date(System.currentTimeMillis() + SecurityConstants.TOKEN_EXPIRATION))
                 .sign(Algorithm.HMAC512(SecurityConstants.SECRET_KEY));
+        Map<String, String> responseToken = new LinkedHashMap<>();
+        responseToken.put("token", token);
         response.addHeader(SecurityConstants.AUTHORIZATION, SecurityConstants.BEARER + token);
-        response.getWriter().println(ResponseUtil.createSuccessResponse("User logged in successfully", token));
+        response.getWriter().println(ResponseUtil.createSuccessResponse("User logged in successfully", responseToken));
         response.getWriter().flush();
     }
 
